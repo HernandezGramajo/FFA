@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
+import 'package:servicios_ffa/session_manager.dart';
+
 
 class AuthScreen extends StatefulWidget {
   @override
@@ -15,6 +17,18 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isSignedUp = false;
   bool _isLoggedIn = false;
 
+@override
+  void initState() {
+    super.initState();
+    _checkSession();
+  }
+
+  Future<void> _checkSession() async {
+    final loggedIn = await SessionManager.isLoggedIn();
+    setState(() {
+      _isLoggedIn = loggedIn;
+    });
+  }
   Future<void> _signUp() async {
     try {
       final userAttributes = {
@@ -61,6 +75,10 @@ class _AuthScreenState extends State<AuthScreen> {
         password: _passwordController.text.trim(),
       );
 
+  if (res.isSignedIn) {
+      await SessionManager.saveSession(_emailController.text.trim());
+    }
+
       setState(() => _isLoggedIn = res.isSignedIn);
       print("Login: ${res.isSignedIn}");
     } catch (e) {
@@ -69,12 +87,14 @@ class _AuthScreenState extends State<AuthScreen> {
   }
 
   Future<void> _signOut() async {
-    try {
-      await Amplify.Auth.signOut();
-      setState(() => _isLoggedIn = false);
-    } catch (e) {
-      print("Error al cerrar sesión: $e");
-    }
+     try {
+        await Amplify.Auth.signOut();
+      } catch (e) {
+        print("Error en cierre de sesión online: $e");
+      } finally {
+        await SessionManager.clearSession();
+        setState(() => _isLoggedIn = false);
+      }
   }
 
   @override

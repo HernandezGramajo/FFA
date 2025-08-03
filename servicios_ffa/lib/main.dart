@@ -1,6 +1,7 @@
 import 'package:amplify_auth_cognito/amplify_auth_cognito.dart';
 import 'package:amplify_flutter/amplify_flutter.dart';
 import 'package:servicios_ffa/trips_planner_app.dart';
+//import 'package:servicios_ffa/features/trip/ui/trips_list/menu_servicios.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +17,7 @@ Future<void> main() async {
 
   runApp(
     const ProviderScope(
+      //child: MyApp (),
       child: TripsPlannerApp(),
     ),
   );

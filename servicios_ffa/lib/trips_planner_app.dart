@@ -3,6 +3,7 @@ import 'package:servicios_ffa/common/navigation/router/router.dart';
 import 'package:servicios_ffa/common/utils/colors.dart' as constants;
 import 'package:flutter/material.dart';
 
+
 class TripsPlannerApp extends StatelessWidget {
   const TripsPlannerApp({
     super.key,
