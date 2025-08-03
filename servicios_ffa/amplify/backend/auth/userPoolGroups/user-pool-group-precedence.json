@@ -1,0 +1,14 @@
+[
+  {
+    "groupName": "UserPool",
+    "precedence": 1
+  },
+  {
+    "groupName": "vendedor",
+    "precedence": 2
+  },
+  {
+    "groupName": "supervisor",
+    "precedence": 3
+  }
+]
