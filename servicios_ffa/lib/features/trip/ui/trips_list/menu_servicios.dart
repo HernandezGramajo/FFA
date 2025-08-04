@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:amplify_flutter/amplify_flutter.dart'; // Importante para signOut
-import 'package:servicios_ffa/common/utils/colors.dart' as constants;
 import 'package:go_router/go_router.dart';
 
 
@@ -37,6 +36,7 @@ class DashboardScreen extends StatelessWidget {
     try {
       await Amplify.Auth.signOut();
       // Redirige al login (o a pantalla de inicio)
+      
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
       print('❌ Error al cerrar sesión: $e');
@@ -67,7 +67,7 @@ class DashboardScreen extends StatelessWidget {
             _DashboardButton(
               label: 'Gestión de Clientes',
               icon: Icons.person,
-              onPressed: () => context.go('/trip'),
+              onPressed: () => context.push('/clientes'),
               
             ),
             _DashboardButton(
@@ -127,15 +127,6 @@ class _DashboardButton extends StatelessWidget {
   }
 }
 
-// Pantallas placeholder para cada microservicio
-class ClientesScreen extends StatelessWidget {
-  const ClientesScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildPlaceholderScreen(context, 'Gestión de Clientes');
-  }
-}
 
 class PedidosScreen extends StatelessWidget {
   const PedidosScreen({super.key});

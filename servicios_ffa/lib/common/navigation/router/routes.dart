@@ -1,5 +1,5 @@
 enum AppRoute {
   home,
-  trip,
-  editTrip,
+  clientes,
+  crearcliente,
 }
