@@ -3,6 +3,8 @@ import 'package:intl/intl.dart';
 import 'package:servicios_ffa/helpers/geolocalizacion_helper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class CrearCliente extends StatefulWidget {
   const CrearCliente({super.key});
@@ -163,12 +165,7 @@ String _ubicacionTexto = 'Ubicación no establecida';
                 controller: _correoController,
                 decoration: const InputDecoration(labelText: 'Correo'),
                 keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value != null && value.isNotEmpty && !RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+\$').hasMatch(value)) {
-                    return 'Correo inválido';
-                  }
-                  return null;
-                },
+                
               ),
               TextFormField(controller: sucursalController, decoration: const InputDecoration(labelText: 'Nombre Sucursal')),
 
@@ -277,6 +274,7 @@ String _ubicacionTexto = 'Ubicación no establecida';
                   onPressed: () {
                     if (_formKey.currentState!.validate()) {
                       // Procesar datos
+                      guardarCliente();
                     }
                   },
                   child: const Text('Guardar Cliente'),
@@ -288,4 +286,69 @@ String _ubicacionTexto = 'Ubicación no establecida';
       ),
     );
   }
+
+
+
+/// funciones de envio
+
+Future<void> guardarCliente() async {
+  const url = 'https://3p0sm23xj5.execute-api.us-east-1.amazonaws.com/crear_clientes';
+
+  // Suponiendo que ya tienes la geolocalización
+  final posicion = await GeolocalizacionHelper.obtenerUbicacionActual(context);
+
+  // Reemplaza esto por la lógica real si ya subiste las imágenes a S3
+  String urlFotoReferencia = 'https://s3.amazonaws.com/bucket/foto1.jpg';
+  String urlDpiFrente = 'https://s3.amazonaws.com/bucket/dpi_frente.jpg';
+  String urlDpiAtras = 'https://s3.amazonaws.com/bucket/dpi_atras.jpg';
+
+  final Map<String, dynamic> cliente = {
+    "nombre": _nombreController.text,
+    "genero": _genero,
+    "edad": int.tryParse(_edadController.text) ?? 0,
+    "correo": _correoController.text,
+    "sucursal": sucursalController.text,
+    "ubicacion_lat": posicion?.latitude,
+    "ubicacion_lng": posicion?.longitude,
+    'hora_inicio': _horaInicio != null ? formatoHora24(_horaInicio!) : null,
+    'hora_fin': _horaFin != null ? formatoHora24(_horaFin!) : null,
+    "dia_cobro": _diaCobro?.toIso8601String().split("T").first,
+    "forma_pago": _formaPago,
+    "nit": nitController.text,
+    "telefonos": telefonos.map((c) => c.text).where((t) => t.isNotEmpty).toList(),
+    "direcciones": direcciones.map((c) => c.text).where((d) => d.isNotEmpty).toList(),
+    "fotos": [
+      {"tipo_foto": "referencia", "url_s3": urlFotoReferencia},
+      {"tipo_foto": "dpi_frente", "url_s3": urlDpiFrente},
+      {"tipo_foto": "dpi_atras", "url_s3": urlDpiAtras},
+    ]
+  };
+
+  final body = jsonEncode({'body': jsonEncode(cliente)});
+  print(body);
+  try {
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json'},
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      print('✅ Cliente guardado con éxito');
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cliente guardado exitosamente')));
+    } else {
+      print('❌ Error al guardar: ${response.body}');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+    }
+  } catch (e) {
+    print('🚨 Error en la solicitud: $e');
+  }
+}
+
+String formatoHora24(TimeOfDay hora) {
+  final h = hora.hour.toString().padLeft(2, '0');
+  final m = hora.minute.toString().padLeft(2, '0');
+  return '$h:$m:00';  // segundos 00 fijo
+}
+
 }

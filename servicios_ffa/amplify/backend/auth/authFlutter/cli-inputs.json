@@ -96,4 +96,4 @@
     "authTriggerConnections": "[\n  {\n    \"triggerType\": \"CustomMessage\",\n    \"lambdaFunctionName\": \"authFlutterCustomMessage\"\n  }\n]",
     "permissions": []
   }
-} 
+}
