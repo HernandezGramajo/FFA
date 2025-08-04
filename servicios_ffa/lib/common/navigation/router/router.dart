@@ -4,7 +4,7 @@ import 'package:servicios_ffa/features/trip/ui/trips_list/menu_servicios.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:servicios_ffa/features/clientes/ui/crear_cliente.dart';
-
+import 'package:servicios_ffa/features/clientes/ui/pedidos.dart';
 
 
 
@@ -25,6 +25,11 @@ final router = GoRouter(
       path: '/crearcliente',
       name: AppRoute.crearcliente.name,
       builder: (context, state) => const CrearCliente(),
+    ),
+     GoRoute(
+      path: '/pedidos',
+      name: AppRoute.pedidos.name,
+      builder: (context, state) =>  Pedidos(),
     ),
   ],
   errorBuilder: (context, state) => Scaffold(

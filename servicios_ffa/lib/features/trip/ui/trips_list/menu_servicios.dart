@@ -39,7 +39,7 @@ class DashboardScreen extends StatelessWidget {
       
       Navigator.of(context).pushReplacementNamed('/login');
     } catch (e) {
-      print('❌ Error al cerrar sesión: $e');
+      print(' Error al cerrar sesión: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al cerrar sesión')),
       );
@@ -73,7 +73,7 @@ class DashboardScreen extends StatelessWidget {
             _DashboardButton(
               label: 'Gestión de Pedidos',
               icon: Icons.shopping_cart,
-              onPressed: () => _navigateTo(context, const PedidosScreen()),
+              onPressed: () => context.push('/pedidos'),
             ),
             _DashboardButton(
               label: 'Comentarios',

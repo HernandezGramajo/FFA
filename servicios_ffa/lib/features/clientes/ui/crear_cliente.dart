@@ -297,11 +297,13 @@ Future<void> guardarCliente() async {
   // Suponiendo que ya tienes la geolocalización
   final posicion = await GeolocalizacionHelper.obtenerUbicacionActual(context);
 
-  // Reemplaza esto por la lógica real si ya subiste las imágenes a S3
-  String urlFotoReferencia = 'https://s3.amazonaws.com/bucket/foto1.jpg';
-  String urlDpiFrente = 'https://s3.amazonaws.com/bucket/dpi_frente.jpg';
-  String urlDpiAtras = 'https://s3.amazonaws.com/bucket/dpi_atras.jpg';
 
+
+  final base64ImageReferencia = fotoReferencia != null    ? await convertirImagenABase64(fotoReferencia!)    : null;
+  final base64Image_dpiadelante = fotoDpiFrente != null    ? await convertirImagenABase64(fotoDpiFrente!)    : null;
+  final base64Image_dpiatras = fotoDpiAtras != null    ? await convertirImagenABase64(fotoDpiAtras!)    : null;
+
+  
   final Map<String, dynamic> cliente = {
     "nombre": _nombreController.text,
     "genero": _genero,
@@ -318,9 +320,22 @@ Future<void> guardarCliente() async {
     "telefonos": telefonos.map((c) => c.text).where((t) => t.isNotEmpty).toList(),
     "direcciones": direcciones.map((c) => c.text).where((d) => d.isNotEmpty).toList(),
     "fotos": [
-      {"tipo_foto": "referencia", "url_s3": urlFotoReferencia},
-      {"tipo_foto": "dpi_frente", "url_s3": urlDpiFrente},
-      {"tipo_foto": "dpi_atras", "url_s3": urlDpiAtras},
+
+      {
+        'tipo_foto': 'referencia',
+        'imagen_base64': base64ImageReferencia,
+        'extension': 'jpg' // o png según sea
+      },
+      {
+        'tipo_foto': 'dpi_frente',
+        'imagen_base64': base64Image_dpiadelante,
+        'extension': 'jpg' // o png según sea
+      },
+      {
+        'tipo_foto': 'dpi_atras',
+        'imagen_base64': base64Image_dpiatras,
+        'extension': 'jpg' // o png según sea
+      },
     ]
   };
 
@@ -334,14 +349,14 @@ Future<void> guardarCliente() async {
     );
 
     if (response.statusCode == 200) {
-      print('✅ Cliente guardado con éxito');
+      print('Cliente guardado con éxito');
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Cliente guardado exitosamente')));
     } else {
-      print('❌ Error al guardar: ${response.body}');
+      print('Error al guardar: ${response.body}');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
     }
   } catch (e) {
-    print('🚨 Error en la solicitud: $e');
+    print('Error en la solicitud: $e');
   }
 }
 
@@ -349,6 +364,11 @@ String formatoHora24(TimeOfDay hora) {
   final h = hora.hour.toString().padLeft(2, '0');
   final m = hora.minute.toString().padLeft(2, '0');
   return '$h:$m:00';  // segundos 00 fijo
+}
+
+Future<String?> convertirImagenABase64(File imageFile) async {
+  final bytes = await imageFile.readAsBytes();
+  return base64Encode(bytes);
 }
 
 }
