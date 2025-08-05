@@ -29,7 +29,7 @@ final router = GoRouter(
      GoRoute(
       path: '/pedidos',
       name: AppRoute.pedidos.name,
-      builder: (context, state) =>  Pedidos(),
+      builder: (context, state) =>   CrearPedidoScreen(),
     ),
   ],
   errorBuilder: (context, state) => Scaffold(
